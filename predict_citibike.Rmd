@@ -1,5 +1,6 @@
 ---
-title: "predict_citibike"
+title: "Predictive Modeling of Urban Micro-Mobility: A Case Study of New York City's Bike-Share Ecosystem"
+author: Jane Le
 output: html_document
 date: "2024-06-21"
 ---
@@ -19,15 +20,29 @@ theme_set(theme_bw())
 options(repr.plot.width=4, repr.plot.height=3)
 ```
 
-## R Markdown
+## Project Context & Background
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+In a bustling metropolis like New York City, transit isn't just about subways and yellow cabs, but it's about micro-mobility. Since its launch, the Citi Bike network has transformed from a novel experiment into a vital artery of NYC's daily transportation ecosystem. However, running a massive bike-share network presents a chaotic logistical puzzle: on any given day, demand can wildly fluctuate based on a sudden downpour, a freezing winter morning, or a quiet holiday weekend.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+When the weather changes or the city empties out for a long weekend, the entire flow of human traffic shifts. If operations teams cannot anticipate these shifts, bikes quickly stack up at the bottom of the city while high-demand transit hubs sit completely empty, leaving commuters stranded.
+
+### The Goal of this Model
+
+This project steps into the shoes of a city planner and operations strategist to understand the true heartbeat of the network. Rather than relying on operational guesswork, this model looks at historical patterns to answer a fundamental question: **How do the elements outside such as the weather in the sky and the calendar on the wall dictate how New Yorkers choose to move?**
+
+By mapping these human behaviors, the model attempts to:
+
+**Anticipate the City's Pulse:** Understand exactly how much a rainy day or a major public holiday dampens the city's urge to ride.
+
+**Identify Weather Comfort Zones:** Discover the exact tipping points where rising temperatures stop encouraging riders and instead make physical commuting unappealing.
+
+**Empower Proactive Logistics:** Provide a clear, reliable baseline of daily demand so fleet managers can move bikes to where they are needed most before the morning rush hour even begins.
+
 
 ```{r}
+data_url <- "https://raw.githubusercontent.com/phuongjanele/citibike-model/main/trips_per_day.tsv"
 #load tsv dataframe
-trips_per_day <- read_tsv("C:/Users/jane/Documents/GitHub/coursework/week3/trips_per_day.tsv")
+trips_per_day <- read_tsv(data_url)
 head(trips_per_day)
 ```
 
@@ -178,7 +193,9 @@ print(paste("RMSE:", rmse))
 
 ```
 
+In 2014, NYC Citi Bike functioned primarily as a utility-driven weekday commuter transit network rather than a leisure or tourist asset. The system's core volume relied heavily on daily routines (e.g., morning and evening rush hours). When offices closed on weekends and holidays, system utilization plummeted, regardless of how perfect the weather was.
 
+Rain is an absolute dealbreaker for casual and commuter riders alike. Furthermore, while an inch of rain washes away in a day, snow depth acts as a multi-day drag on the network. The lingering presence of snow on the ground, even on a subsequent sunny day, creates ongoing safety hazards and icy bike lanes, suppressing demand for days after a winter storm.
 
 ```{r}
 #Plot the final model 
@@ -197,7 +214,11 @@ trips_per_day |>
     ggplot(aes(x=pred, y=num_trips)) +
     geom_point() +
     geom_abline(linetype = "dashed", color="gold")
+
 ```
+
+
+Ridership does not increase linearly with heat forever. Instead, it follows a parabolic curve with diminishing returns. Biking activity scales up aggressively as spring transitions into mild summer days, but plateaus or slumps during extreme, oppressive summer heat waves when physical exertion becomes uncomfortable.
 
 
 ```{r}
@@ -217,4 +238,12 @@ objects_to_save <- list(
 
 # Save the list of objects into an RData file
 save(objects_to_save, file = "model_and_data.RData")
-```
+```       
+
+### Final Model Conclusion & Generalizability
+
+**Model Reliability & Generalizability:** The fact that the **Test RMSE is within 5% of the Validation RMSE** provides strong empirical proof that the model generalizes effectively to entirely unseen data and is free from overfitting.
+
+* **Conclusion:** Because our test error closely mirrors our validation error, we can confidently conclude that our data-splitting strategy and 10-fold cross-validation loops successfully forced the model to learn true underlying behavioral patterns (like weather thresholds and commuter calendar cycles) rather than localized statistical noise. This framework is highly stable, dependable, and ready to be deployed for operational fleet logistics and demand forecasting.
+```       
+
